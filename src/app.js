@@ -1,17 +1,81 @@
-const express = require('express');
+const express = require("express");
+require("dotenv").config();
+const connectDB = require("./config/database");
+
 const app = express();
+
+connectDB();
+// order of Router are important
 const PORT = process.env.PORT || 8080;
+// app.use('/vivek', (req, res) => {
+//   res.send("Hello, vivek!");
+// });
+app.use('/vivek/:id', (req, res) => {
+  const userId = req.params.id;
+  res.send(`Hello again, vivek with id ${userId}!`);
+});
+// app.use('/user', (req, res) => {
+//   res.send("Hello, hritik!");
+// });
+// app.use('/', (req, res, next) => {
+//   res.send("Hello, world!");
+//   next();
+// });
+// app.get("/test", (req, res) => {
+//   res.send("Hello, test!");
+// });
 
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
+app.get("/", (req, res) => {
+  res.send("Hello, Express!");
 });
-app.get('/vivek', (req, res) => {
-  res.send('Hello, vivek!');
+// b is optional
+// app.get("/ab?c", (req, res) => {
+//   res.send("Welcome to the Home Page!");
+// });
+// app.get("/a(ab)?c", (req, res) => {
+//   res.send("Matched!");
+// });
+// app.get("/a+bc", (req, res) => {
+//   res.send("Matched!");
+// });
+// app.get("/a*bc", (req, res) => {
+//   res.send("Matched!");
+// });
+// app.get("/user(s)?", (req, res) => {
+//   res.send("Users route");
+// });
+// app.get("/file*", (req, res) => {
+//   res.send("File route");
+// });
+// app.get(/^\/a(ab)?c$/, (req, res) => {
+//   res.send("Regex matched!");
+// });
+
+app.get("/api/v1", (req, res) => {
+  res.send("Hello, API v1!");
+});
+app.get("/user", (req, res) => {
+  res.send({firstName: "Vivek", lastName: "singh", age: 24, gender: "male", email: "vivek.singh@example.com", password: "password123", id: "1"});
+});
+app.get("/user/:id", (req, res) => {
+  const userId = req.params.id;
+  res.send({firstName: "Hritik", lastName: "singh", age: 18, gender: "male", email: "hritik.singh@example.com", id: userId});
 });
 
-app.get('/test', (req, res) => {
-  res.send('Hello, test!');
+app.post("/create", (req, res) => {
+  res.send({message: "User created successfully!"});
 });
+
+app.put("/update/:id", (req, res) => {
+  const userId = req.params.id;
+  res.send({message: `User with id ${userId} updated successfully!`});
+});
+
+app.delete("/delete/:id", (req, res) => {
+  const userId = req.params.id;
+  res.send({message: `User with id ${userId} deleted successfully!`});
+});
+
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
