@@ -124,6 +124,22 @@ app.use('/dashboard', userAuth, (req, res) => {
 }
 );
 
+// error handling middleware
+app.use('/dashboard', (err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
+// app.get("/testError", (req, res, next) => {
+//   try {
+//     throw new Error("Something broke");
+//   } catch (err) {
+//     next(err);
+//   }
+// });
+
+
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
