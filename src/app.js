@@ -114,7 +114,7 @@ app.use('/name', (req, res, next) => {
 // );
 
 const userAuth = require("./middleware/auth");
-app.use('/admin', userAuth, (req, res) => {
+app.use('/admin', userAuth, (req, res) => { 
   res.send("Welcome, Admin!");
 }
 );  
