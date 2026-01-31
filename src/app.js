@@ -54,9 +54,11 @@ app.get("/", (req, res) => {
 app.get("/api/v1", (req, res) => {
   res.send("Hello, API v1!");
 });
+
 app.get("/user", (req, res) => {
   res.send({firstName: "Vivek", lastName: "singh", age: 24, gender: "male", email: "vivek.singh@example.com", password: "password123", id: "1"});
 });
+
 app.get("/user/:id", (req, res) => {
   const userId = req.params.id;
   res.send({firstName: "Hritik", lastName: "singh", age: 18, gender: "male", email: "hritik.singh@example.com", id: userId});
@@ -75,6 +77,52 @@ app.delete("/delete/:id", (req, res) => {
   const userId = req.params.id;
   res.send({message: `User with id ${userId} deleted successfully!`});
 });
+
+app.use('/userData', (req, res, next) => {
+  // res.send("user data not found");
+  next();
+}, (req, res, next) => {
+  // res.send({firstName: "Default", lastName: "User1", age: 0, gender: "unknown", email: "default@example.com"});
+  next();
+}, (req, res, next) => {
+  res.send({firstName: "Default", lastName: "User2", age: 0, gender: "unknown", email: "default@example.com"});
+  next();
+}, (req, res, next) => {
+  res.send({firstName: "Default", lastName: "User3", age: 0, gender: "unknown", email: "default@example.com"});
+  next();
+});
+
+  // when we call next() multiple times in a single route, only the first response is sent to the client. Subsequent calls to next() do not send additional responses, as the response has already been finalized.
+
+  app.use('/name', (req, res, next) => {
+    // res.send("404 Not Found!");
+    next();
+  });
+
+app.use('/name', (req, res, next) => {
+  res.send("Vivek Singh");
+}); 
+
+// app.use('/admin', (req, res) => {
+//   const auth = 'secret123'; // Example authentication check
+//   if (auth === "secret123") {
+//     res.send("Welcome, Admin!");
+//   } else {
+//     res.status(401).send("Unauthorized: Invalid credentials");
+//   }
+// }
+// );
+
+const userAuth = require("./middleware/auth");
+app.use('/admin', userAuth, (req, res) => {
+  res.send("Welcome, Admin!");
+}
+);  
+
+app.use('/dashboard', userAuth, (req, res) => {
+  res.send("Welcome to your Dashboard!");
+}
+);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
