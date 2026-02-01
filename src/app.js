@@ -12,6 +12,10 @@ connectDB()
 const PORT = process.env.PORT || 8080;
 app.use(express.json());
 
+app.use(express.json());
+
+
+// signup api 
 app.post("/signup", async (req, res) => {
   try {
     const newUser = new User(req.body);
@@ -38,6 +42,106 @@ app.post("/signup", async (req, res) => {
 }
 
 });
+
+// feed api 
+app.get("/feed", async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    console.log("Fetch users error:", error);
+    res.status(500).json({
+      error: "Error fetching users",
+      details: error.message
+    });
+  }} );
+
+  // fing user with email 
+  app.get("/email", async (req, res) => {
+  try {
+    const email = req.body.email;
+
+    console.log("Email received:", email);
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const user = await User.findOne({ email }).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.log("Get user error:", error);
+    res.status(500).json({
+      error: "Error fetching user",
+      details: error.message
+    });
+  }
+});
+
+// delete the data from db
+app.delete("/user", async (req, res) => {
+  try {
+    const email = req.body.email;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const deletedUser = await User.findOneAndDelete({ email });
+
+    if (!deletedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "User deleted successfully",
+      user: deletedUser
+    });
+  } catch (error) {
+    console.log("Delete user error:", error);
+    res.status(500).json({
+      error: "Error deleting user",
+      details: error.message
+    });
+  }
+});
+
+// update the data 
+
+app.patch("/user", async (req, res) => {
+  console.log(req.body, 'fff')
+  try {
+    const { email, ...updateData } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "_id is required" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      email,
+      updateData,
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    res.status(200).json({
+      message: "User updated successfully",
+      user: updatedUser
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Error updating user",
+      details: error.message
+    });
+  }
+});
+
+
+
 
 // app.use('/vivek', (req, res) => {
 //   res.send("Hello, vivek!");
